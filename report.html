@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Sirat Sena - Reporte de Accidente</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Sirat Sena</h1>
+    <h2>Reporte de Accidente</h2>
+
+    <form id="reportForm">
+      <label>Nombres y apellidos:</label>
+      <input type="text" id="nombreApellido" required>
+
+      <label>Formación:</label>
+      <input type="text" id="formacion" required>
+
+      <label>Ficha:</label>
+      <input type="text" id="ficha" required>
+
+      <label>Instructor encargado:</label>
+      <input type="text" id="instructor" required>
+
+      <label>Fecha del accidente:</label>
+      <input type="date" id="fechaAccidente" required>
+
+      <label>Hora del accidente:</label>
+      <input type="time" id="horaAccidente" required>
+
+      <label>Gravedad del accidente:</label>
+      <select id="gravedad" required>
+        <option value="">Selecciona una opción</option>
+        <option value="Leve">Leve</option>
+        <option value="Moderado">Moderado</option>
+        <option value="Grave">Grave</option>
+      </select>
+
+      <label>¿Qué ocurrió en el accidente?</label>
+      <textarea id="descripcion" rows="4" required></textarea>
+
+      <label>Adjuntar imagen (opcional):</label>
+      <input type="file" id="imagen" accept="image/*">
+
+      <button type="submit">Enviar Reporte</button>
+    </form>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
