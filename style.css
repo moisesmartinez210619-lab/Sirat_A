@@ -1,0 +1,75 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.container {
+  background: #0FA32D;
+  color: white;
+  width: 380px;
+  margin: 40px auto;
+  padding: 25px;
+  border-radius: 10px;
+}
+
+h1 {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+input, textarea, select {
+  display: block;
+  width: 90%;
+  margin: 8px auto;
+  padding: 10px;
+  border-radius: 20px;
+  border: none;
+  font-size: 14px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  text-align: left;
+  margin-left: 20px;
+}
+
+button {
+  background: white;
+  color: #0FA32D;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+button:hover {
+  background: #d9d9d9;
+}
+
+a {
+  color: #e6e6fa;
+  text-decoration: none;
+  font-style: italic;
+}
+
+.reporte {
+  background: #d2d8d2;
+  color: black;
+  padding: 10px;
+  border-radius: 15px;
+  margin: 10px 0;
+}
+
+.reporte button {
+  background-color: #0FA32D;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
