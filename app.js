@@ -1,8 +1,24 @@
 // Firebase imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore, addDoc, collection, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+import { 
+  getFirestore, 
+  addDoc, 
+  collection, 
+  getDocs, 
+  updateDoc, 
+  doc 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { 
+  getStorage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-storage.js";
 
 // 🔥 CONFIGURA TU FIREBASE AQUÍ
 const firebaseConfig = {
@@ -14,6 +30,7 @@ const firebaseConfig = {
   appId: "TU_APP_ID"
 };
 
+// Inicialización
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -26,9 +43,15 @@ if (registerForm) {
     e.preventDefault();
     const email = registerEmail.value;
     const password = registerPassword.value;
-    await createUserWithEmailAndPassword(auth, email, password);
-    alert("Registro exitoso");
-    window.location.href = "report.html";
+
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      alert("✅ Registro exitoso. Ahora inicia sesión con tu cuenta.");
+      // 🔁 Redirigir a la pantalla de inicio de sesión
+      window.location.href = "index.html";
+    } catch (error) {
+      alert("❌ Error al registrarse: " + error.message);
+    }
   });
 }
 
@@ -39,11 +62,19 @@ if (loginForm) {
     e.preventDefault();
     const email = loginEmail.value;
     const password = loginPassword.value;
-    await signInWithEmailAndPassword(auth, email, password);
-    if (email.includes("@admin.com")) {
-      window.location.href = "admin.html";
-    } else {
-      window.location.href = "report.html";
+
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      
+      // ✅ Si el correo es del admin, lo manda al panel de administrador
+      if (email === "admin@sirat-sena.com") {
+        window.location.href = "admin.html";
+      } else {
+        window.location.href = "report.html";
+      }
+
+    } catch (error) {
+      alert("❌ Error al iniciar sesión: " + error.message);
     }
   });
 }
@@ -64,29 +95,34 @@ if (reportForm) {
     const descripcion = document.getElementById("descripcion").value;
     const imagen = document.getElementById("imagen").files[0];
 
-    let imagenURL = "";
-    if (imagen) {
-      const imagenRef = ref(storage, `reportes/${Date.now()}-${imagen.name}`);
-      await uploadBytes(imagenRef, imagen);
-      imagenURL = await getDownloadURL(imagenRef);
+    try {
+      let imagenURL = "";
+      if (imagen) {
+        const imagenRef = ref(storage, `reportes/${Date.now()}-${imagen.name}`);
+        await uploadBytes(imagenRef, imagen);
+        imagenURL = await getDownloadURL(imagenRef);
+      }
+
+      await addDoc(collection(db, "reportes"), {
+        nombreApellido,
+        formacion,
+        ficha,
+        instructor,
+        fechaAccidente,
+        horaAccidente,
+        gravedad,
+        descripcion,
+        imagenURL,
+        estado: "pendiente",
+        fechaEnvio: new Date().toISOString()
+      });
+
+      alert("✅ Reporte enviado con éxito");
+      e.target.reset();
+
+    } catch (error) {
+      alert("❌ Error al enviar el reporte: " + error.message);
     }
-
-    await addDoc(collection(db, "reportes"), {
-      nombreApellido,
-      formacion,
-      ficha,
-      instructor,
-      fechaAccidente,
-      horaAccidente,
-      gravedad,
-      descripcion,
-      imagenURL,
-      estado: "pendiente",
-      fechaEnvio: new Date().toISOString()
-    });
-
-    alert("Reporte enviado con éxito ✅");
-    e.target.reset();
   });
 }
 
@@ -96,6 +132,7 @@ if (reportList) {
   async function cargarReportes() {
     const querySnapshot = await getDocs(collection(db, "reportes"));
     reportList.innerHTML = "";
+    
     querySnapshot.forEach((docu) => {
       const data = docu.data();
       const div = document.createElement("div");
@@ -108,19 +145,19 @@ if (reportList) {
         <p><strong>Fecha:</strong> ${data.fechaAccidente} - ${data.horaAccidente}</p>
         <p><strong>Gravedad:</strong> ${data.gravedad}</p>
         <p><strong>Descripción:</strong> ${data.descripcion}</p>
-        ${data.imagenURL ? `<img src="${data.imagenURL}" width="200">` : ""}
+        ${data.imagenURL ? `<img src="${data.imagenURL}" width="200" alt="Imagen del accidente">` : ""}
         <p><strong>Estado:</strong> ${data.estado}</p>
         <button class="btn-solucionar" data-id="${docu.id}">Marcar como solucionado</button>
       `;
       reportList.appendChild(div);
     });
 
-    // Botones para actualizar estado
+    // Botones de "solucionado"
     document.querySelectorAll(".btn-solucionar").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.getAttribute("data-id");
         await updateDoc(doc(db, "reportes", id), { estado: "solucionado" });
-        alert("Reporte marcado como solucionado ✅");
+        alert("✅ Reporte marcado como solucionado");
         cargarReportes();
       });
     });
@@ -128,3 +165,4 @@ if (reportList) {
 
   cargarReportes();
 }
+
